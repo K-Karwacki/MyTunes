@@ -55,11 +55,8 @@ public class SongDAO {
         }
     }
     public Song getSongById(int songId) throws SQLException {
-        String query = "SELECT * FROM songs WHERE id = ?";
+        String query = "SELECT * FROM songs WHERE id = 4";
         Song song = null;
-
-
-
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {

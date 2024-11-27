@@ -1,0 +1,14 @@
+.background-image{
+    -fx-background-image: url("../MyTunes/Images/clip-gifs-with-background-5.gif");
+    -fx-background-repeat: stretch;
+}
+.top-bar{
+    -fx-background-color: rgba(40,200,200,0.8) ;
+    -fx-background-radius: 50;
+}
+.search-button{
+    -fx-background-image: url("../MyTunes/Images/search.png");
+}
+.transparent{
+    -fx-background-color: transparent;
+}

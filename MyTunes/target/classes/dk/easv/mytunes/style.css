@@ -9,3 +9,6 @@
 .search-button{
     -fx-background-image: url("../MyTunes/Images/search.png");
 }
+.transparent{
+    -fx-background-color: transparent;
+}

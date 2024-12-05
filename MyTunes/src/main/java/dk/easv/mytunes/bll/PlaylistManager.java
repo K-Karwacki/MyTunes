@@ -1,21 +1,77 @@
 package dk.easv.mytunes.bll;
 
 import dk.easv.mytunes.be.Playlist;
-import dk.easv.mytunes.dal.IPlaylistDAO;
-import dk.easv.mytunes.dal.PlaylistDAO;
+import dk.easv.mytunes.be.Song;
+import dk.easv.mytunes.dal.daoimpl.PlaylistDaoImpl;
+import dk.easv.mytunes.dal.interfaces.PlaylistDao;
+
+import java.sql.SQLException;
+import java.util.List;
 
 public class PlaylistManager
 {
-  private final IPlaylistDAO playlistDAO = new PlaylistDAO();
+  private final PlaylistDao playlistDao;
 
-  public void deletePlaylist(Playlist playlist)
-  {
-    playlistDAO.deletePlaylist(playlist);
+  public PlaylistManager(){
+    playlistDao = new PlaylistDaoImpl();
   }
 
-  public void createPlaylist(String name)
-  {
-    System.out.println("manager called");
-    playlistDAO.createNewPlaylist(new Playlist(1,name));
+  public void deletePlaylist(Playlist playlist) {
+    if(playlist!=null){
+      try {
+        playlistDao.deletePlaylist(playlist);
+      }catch (SQLException e){
+        System.out.println("PlaylistDao failed. " + e.getMessage());
+//        e.printStackTrace();
+      }
+    }
+//    playlistDAO.delete(playlist);
   }
+
+  public void insertNewPlaylist(Playlist newPlaylist) {
+    if(newPlaylist != null){
+      try{
+        playlistDao.createPlaylist(newPlaylist);
+      }catch (SQLException e){
+        System.out.println("PlaylistDao failed. " + e.getMessage());
+        //        e.printStackTrace();
+      }
+    }
+  }
+
+  public List<Playlist> getAllPlaylists() {
+    try{
+      return playlistDao.getAllPlaylists();
+    }catch (SQLException e){
+      System.out.println("PlaylistDao failed. " + e.getMessage());
+      //      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public void deleteSongFromPlaylist(Song song, Playlist playlist){
+    if(song != null && playlist != null){
+      try{
+        playlistDao.deleteSongFromPlaylist(song, playlist);
+      }catch (SQLException e){
+        System.out.println("PlaylistDao failed. " + e.getMessage());
+        //        e.printStackTrace();
+      }
+    }
+  }
+
+
+
+  public void addSongToPlaylist(Song selectedSong, Playlist selectedPlaylist) {
+    System.out.println(selectedPlaylist+""+ selectedSong);
+    if(selectedSong != null && selectedPlaylist != null){
+      try{
+        playlistDao.addSongToPlaylist(selectedSong, selectedPlaylist);
+      }catch (SQLException e){
+        System.out.println("PlaylistDao failed. " + e.getMessage());
+//        e.printStackTrace();
+      }
+    }
+  }
+
 }

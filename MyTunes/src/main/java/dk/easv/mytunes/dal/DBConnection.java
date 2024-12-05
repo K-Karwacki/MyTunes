@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 
 public class DBConnection {
-  private static final String DB_URL = "jdbc:sqlite:MyTunes.db";
-  private static final String DB_USER = "user";
-  private static final String DB_PASSWORD = "password";
+  private static final String DB_URL = "jdbc:sqlserver://10.176.111.34:1433;databaseName=G7MyTunes;encrypt=true;trustServerCertificate=true;";
+  private static final String DB_USER = "CSe2024b_e_14";
+  private static final String DB_PASSWORD = "CSe2024bE14!24";
   private static Connection connection;
 
   public static Connection getConnection() throws SQLException{

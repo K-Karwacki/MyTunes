@@ -9,6 +9,20 @@ public class Song {
   private String duration; // e.g., "4:23"
 
   // Constructor
+
+  public Song()
+  {
+
+  }
+
+  public Song(String title, String artist, String category, String filePath, String duration) {
+    this.title = title;
+    this.artist = artist;
+    this.category = category;
+    this.filePath = filePath;
+    this.duration = duration;
+  }
+
   public Song(int id, String title, String artist, String category, String filePath, String duration) {
     this.id = id;
     this.title = title;
@@ -17,6 +31,7 @@ public class Song {
     this.filePath = filePath;
     this.duration = duration;
   }
+
 
   // Getters and Setters
   public int getId() {
@@ -69,6 +84,6 @@ public class Song {
 
   @Override
   public String toString() {
-    return title + " - " + artist + " (" + category + ")";
+    return getTitle() + " - " + getArtist() + " (" + getCategory() + ")";
   }
 }

@@ -105,8 +105,8 @@
                   <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" spacing="15.0" VBox.vgrow="ALWAYS">
                      <children>
                         <Button mnemonicParsing="false" onAction="#onClickOpenCreatePlaylist" text="Create new" />
-                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" text="Remove" />
-                        <Button layoutX="159.0" layoutY="10.0" mnemonicParsing="false" text="Edit Playlist" />
+                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickRemovePlaylist" text="Remove" />
+                        <Button layoutX="159.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickOpenEditPlaylist" text="Edit Playlist" />
                      </children>
                      <VBox.margin>
                         <Insets top="10.0" />
@@ -128,14 +128,14 @@
                         <Insets bottom="10.0" />
                      </VBox.margin>
                   </HBox>
-                  <ListView fx:id="playlistSongListView" prefHeight="374.0" VBox.vgrow="ALWAYS">
+                  <ListView fx:id="songOnPlaylistListView" prefHeight="374.0" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
                      </VBox.margin>
                   </ListView>
                   <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" text="Remove song from playlist" />
+                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickRemoveSongFromPlaylist" text="Remove song from playlist" />
                      </children>
                      <VBox.margin>
                         <Insets top="10.0" />
@@ -170,9 +170,9 @@
                   </ListView>
                   <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" spacing="15.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Button mnemonicParsing="false" text="Add song to playlist" />
-                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" text="Remove song" />
-                        <Button layoutX="159.0" layoutY="10.0" mnemonicParsing="false" text="Edit" />
+                        <Button mnemonicParsing="false" onAction="#onClickAddSongToPlaylist" text="Add song to playlist" />
+                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickRemoveSelectedSong" text="Remove song" />
+                        <Button layoutX="159.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickOpenAddNewSong" text="Edit" />
                      </children>
                      <VBox.margin>
                         <Insets top="10.0" />

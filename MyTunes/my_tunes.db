@@ -1,0 +1,10 @@
+CREATE TABLE song(
+  id int,
+  title varchar,
+  category varchar
+);
+
+create table playlist(
+  id int,
+  name varchar
+  );

@@ -16,6 +16,7 @@ public class MyTunes extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("MyTunes");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 

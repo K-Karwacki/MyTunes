@@ -2,11 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -14,176 +14,36 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.pl.controllers.MainSceneController">
+<BorderPane prefHeight="600.0" prefWidth="1000.0" styleClass="background-image" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.pl.controllers.MainController">
    <top>
-      <HBox alignment="CENTER" prefHeight="55.0" prefWidth="800.0" spacing="600.0" BorderPane.alignment="CENTER">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="MyTunes">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Text>
-            <HBox alignment="CENTER" prefHeight="55.0" spacing="20.0">
-               <children>
-                  <Button mnemonicParsing="false" text="Home" />
-               </children>
-            </HBox>
-         </children>
-         <BorderPane.margin>
-            <Insets bottom="20.0" />
-         </BorderPane.margin>
+      <HBox>
+         <ImageView>
+            <Image url="@Images/logo.png" />
+         </ImageView>
       </HBox>
    </top>
-   <bottom>
-      <HBox prefHeight="62.0" prefWidth="800.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox alignment="CENTER" prefHeight="62.0" prefWidth="200.0" spacing="20.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" />
-                  <VBox alignment="CENTER_LEFT" HBox.hgrow="NEVER">
-                     <children>
-                        <Label text="Song title">
-                           <font>
-                              <Font size="17.0" />
-                           </font>
-                        </Label>
-                        <Label text="Song author">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-            <VBox alignment="CENTER" prefWidth="400.0" spacing="5.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="33.0" prefWidth="302.0" spacing="20.0">
-                     <children>
-                        <Button mnemonicParsing="false" text="prev" />
-                        <Button mnemonicParsing="false" text="Play" />
-                        <Button mnemonicParsing="false" text="next" />
-                     </children>
-                  </HBox>
-                  <ProgressBar prefHeight="8.0" prefWidth="297.0" progress="0.0" />
-               </children>
-            </VBox>
-            <HBox alignment="CENTER" prefWidth="200.0" spacing="10.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <Button mnemonicParsing="false" text="Mute" />
-                  <Slider prefHeight="16.0" prefWidth="110.0" />
-               </children>
-            </HBox>
-         </children>
-         <BorderPane.margin>
-            <Insets top="20.0" />
-         </BorderPane.margin>
-      </HBox>
-   </bottom>
    <center>
-      <HBox alignment="CENTER" BorderPane.alignment="CENTER">
-         <children>
-            <VBox alignment="CENTER" fillWidth="false" prefHeight="443.0" prefWidth="300.0" style="-fx-border-color: transparent;">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Playlists" textAlignment="CENTER" wrappingWidth="121.119140625">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Text>
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <ListView fx:id="playlistListView" prefHeight="372.0" VBox.vgrow="ALWAYS">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
-                     </VBox.margin>
-                  </ListView>
-                  <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" spacing="15.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#onClickOpenCreatePlaylist" text="Create new" />
-                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickRemovePlaylist" text="Remove" />
-                        <Button layoutX="159.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickOpenEditPlaylist" text="Edit Playlist" />
-                     </children>
-                     <VBox.margin>
-                        <Insets top="10.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-            </VBox>
-            <VBox alignment="CENTER" fillWidth="false" prefHeight="965.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Songs on playlist: " textAlignment="CENTER" wrappingWidth="166.119140625">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Text>
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <ListView fx:id="songOnPlaylistListView" prefHeight="374.0" VBox.vgrow="ALWAYS">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
-                     </VBox.margin>
-                  </ListView>
-                  <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickRemoveSongFromPlaylist" text="Remove song from playlist" />
-                     </children>
-                     <VBox.margin>
-                        <Insets top="10.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-            </VBox>
-            <VBox alignment="CENTER" fillWidth="false" prefHeight="441.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Your songs" textAlignment="CENTER" wrappingWidth="121.119140625">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Text>
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" prefHeight="26.0" prefWidth="246.0">
-                     <children>
-                        <TextField alignment="CENTER_RIGHT" promptText="Search song" HBox.hgrow="ALWAYS" />
-                        <Button mnemonicParsing="false" text="Search" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </HBox>
-                  <ListView fx:id="songListView" prefHeight="560.0" VBox.vgrow="ALWAYS">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
-                     </VBox.margin>
-                  </ListView>
-                  <HBox alignment="CENTER" prefHeight="32.0" prefWidth="298.0" spacing="15.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#onClickAddSongToPlaylist" text="Add song to playlist" />
-                        <Button layoutX="111.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickRemoveSelectedSong" text="Remove song" />
-                        <Button layoutX="159.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickOpenAddNewSong" text="Edit" />
-                     </children>
-                     <VBox.margin>
-                        <Insets top="10.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-            </VBox>
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
+      <HBox fx:id="libraryContainer" alignment="center">
+<!--         <fx:include source="library.fxml" BorderPane.alignment="CENTER" />-->
       </HBox>
    </center>
+   <bottom>
+      <HBox fx:id="mp3Container" alignment="center">
+<!--         <fx:include source="mp3_player.fxml" BorderPane.alignment="CENTER" />-->
+      </HBox>
+   </bottom>
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="1000.0" styleClass="transparent" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="107.0" fitWidth="107.0" pickOnBounds="true" HBox.hgrow="ALWAYS">
+               <image>
+                  <Image url="@Images/logo2.png" />
+               </image>
+            </ImageView>
+         </children>
+         <padding>
+            <Insets left="50.0" right="50.0" />
+         </padding>
+      </HBox>
+   </top>
 </BorderPane>

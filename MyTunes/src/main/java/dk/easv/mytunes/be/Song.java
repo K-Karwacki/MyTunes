@@ -84,6 +84,6 @@ public class Song {
 
   @Override
   public String toString() {
-    return getTitle() + " - " + getArtist() + " (" + getCategory() + ")";
+    return getArtist() + " - " + getTitle() + " (" + getCategory() + ")";
   }
 }

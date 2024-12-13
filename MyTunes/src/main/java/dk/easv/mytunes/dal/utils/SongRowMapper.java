@@ -1,8 +1,9 @@
 package dk.easv.mytunes.dal.utils;
 
 import dk.easv.mytunes.be.Song;
-import dk.easv.mytunes.dal.interfaces.RowMapper;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -14,7 +15,7 @@ public class SongRowMapper implements RowMapper<Song>
     song.setTitle(resultSet.getString("title"));
     song.setArtist(resultSet.getString("artist"));
     song.setCategory(resultSet.getString("category"));
-    song.setFilePath(resultSet.getString("path"));
+    song.setFilePath(URLDecoder.decode(resultSet.getString("path"), StandardCharsets.UTF_8));
     song.setDuration(resultSet.getString("duration"));
     return song;
   }

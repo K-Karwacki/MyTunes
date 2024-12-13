@@ -14,8 +14,8 @@ public class SongService
   private final SongDao songDao;
 
   public SongService(){
-    songDao = new SongDaoDB();
-//    songDao = new SongDaoTest();
+//    songDao = new SongDaoDB();
+    songDao = new SongDaoTest();
   }
 
   public void addSong(Song song){

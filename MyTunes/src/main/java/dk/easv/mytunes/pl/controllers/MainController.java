@@ -1,12 +1,9 @@
 package dk.easv.mytunes.pl.controllers;
 
 import dk.easv.mytunes.MyTunes;
-import dk.easv.mytunes.be.Playlist;
-import dk.easv.mytunes.be.Song;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import java.io.IOException;

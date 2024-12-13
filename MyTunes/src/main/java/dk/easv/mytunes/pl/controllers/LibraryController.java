@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LibraryController implements Initializable
 {
   private final LibraryModel libraryModel;
-  @FXML private ListView<Song> songListView;
   @FXML private ListView<Playlist> playlistListView;
   @FXML private ListView<Song> songsOnPlaylistListView;
   @FXML private ComboBox<String> filterSongsComboBox;

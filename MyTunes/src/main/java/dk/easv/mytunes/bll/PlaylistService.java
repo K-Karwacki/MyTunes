@@ -14,8 +14,8 @@ public class PlaylistService
   private final PlaylistDao playlistDao;
 
   public PlaylistService(){
-    playlistDao = new PlaylistDaoDB();
-//    playlistDao = new PlaylistDaoTest();
+//    playlistDao = new PlaylistDaoDB();
+    playlistDao = new PlaylistDaoTest();
   }
 
   public void deletePlaylist(Playlist playlist) {

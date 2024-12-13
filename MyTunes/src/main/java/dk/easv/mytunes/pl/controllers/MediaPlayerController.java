@@ -4,9 +4,7 @@ import dk.easv.mytunes.MyTunes;
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.pl.models.MediaPlayerModel;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -15,20 +13,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
-import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 public class MediaPlayerController implements Initializable
 {
   private final MediaPlayerModel mediaPlayerModel;
-  private boolean paused;
 
   @FXML Label currentSongLabel;
   @FXML Label currentArtistLabel;
@@ -38,6 +31,9 @@ public class MediaPlayerController implements Initializable
   @FXML ImageView playPauseImageView;
   @FXML ImageView muteUnMuteImageView;
   @FXML Slider volumeSlider;
+  @FXML Slider timeSlider;
+  @FXML Label totalTimeLabel;
+  @FXML Label currentTimeLabel;
   @FXML ListView<Playlist> playlistListView;
   @FXML ListView<Song> songsOnPlaylistListView;
 
@@ -59,21 +55,66 @@ public class MediaPlayerController implements Initializable
 
     // Set on song change callback
     mediaPlayerModel.setOnSongChange(song -> {
+      if(timeSlider.isDisable()){
+        timeSlider.setDisable(false);
+      }
+      timeSlider.setMax(mediaPlayerModel.getTotalDuration().toSeconds());
       currentSongLabel.setText(song.getTitle());
       currentArtistLabel.setText(song.getArtist());
       playlistLbl.setText("Playlist: " + mediaPlayerModel.getCurrentPlaylist().getName());
       nextSongLbl.setText("Next: "+ mediaPlayerModel.getNextSong().getTitle() + " - " + mediaPlayerModel.getNextSong().getArtist());
+      totalTimeLabel.setText(String.format("%02d:%02d", (int)mediaPlayerModel.getTotalDuration().toMinutes(), (int)mediaPlayerModel.getTotalDuration().toSeconds()%60));
+
+      mediaPlayerModel.getCurrentDurationProperty().addListener((observable, oldValue, newValue) -> {
+        if(!timeSlider.isValueChanging()){
+          timeSlider.setValue(newValue.toSeconds());
+          currentTimeLabel.setText(String.format("%02d:%02d", (int)mediaPlayerModel.getCurrentDuration().toMinutes(), (int)mediaPlayerModel.getCurrentDuration().toSeconds()%60));
+        }
+      });
     });
   }
 
 
   @Override public void initialize(URL location, ResourceBundle resources)
   {
+    timeSlider.setDisable(true);
+
     mediaPlayerModel.setVolume(volumeSlider.getValue());
     volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
       mediaPlayerModel.setVolume(Math.pow(newValue.doubleValue(), 2));
-//      System.out.println(newValue);
     });
+
+    timeSlider.valueChangingProperty().addListener(((observable, oldValue, newValue) -> {
+      if(!newValue){
+        mediaPlayerModel.seek(Duration.seconds(timeSlider.getValue()));
+      }
+    }));
+
+
+  }
+
+  // Set dependencies
+  public void setSongsOnPlaylistListView(ListView<Song> songsListView) {
+    this.songsOnPlaylistListView = songsListView;
+    songsOnPlaylistListView.setOnMouseClicked(event -> { // Add on double click event on song listview from selected playlist
+      if (event.getClickCount()==2 && songsOnPlaylistListView.getSelectionModel().getSelectedItem() != null){
+        Playlist selectedPlaylist = playlistListView.getSelectionModel().getSelectedItem();
+        if(mediaPlayerModel.getCurrentPlaylist() != selectedPlaylist){ // If song is selected from different playlist switch playlists
+          mediaPlayerModel.setCurrentPlaylist(selectedPlaylist);
+        }
+        mediaPlayerModel.setCurrentSongIndex(songsOnPlaylistListView.getSelectionModel().getSelectedIndex()); // Sets current song index
+        playPauseImageView.setImage(pauseImage);
+        mediaPlayerModel.playCurrentSong(); // Plays song
+      }
+    });
+  }
+
+  public void setLibrary(Map<Playlist, ObservableList<Song>> library){
+    mediaPlayerModel.setLibrary(library);
+  }
+
+  public void setPlaylistListView(ListView<Playlist> playlistListView){
+    this.playlistListView = playlistListView;
   }
 
   @FXML private void onClickPlayAndPauseSong(){
@@ -89,12 +130,10 @@ public class MediaPlayerController implements Initializable
   }
 
   @FXML private void onClickPlayNextSong(){
-    paused = false;
     mediaPlayerModel.playNext();
   }
 
   @FXML private void onClickPlayPrevSong(){
-    paused = false;
     mediaPlayerModel.playPrevious();
   }
 
@@ -108,26 +147,5 @@ public class MediaPlayerController implements Initializable
     }
   }
 
-  // Set dependencies
-  public void setSongsOnPlaylistListView(ListView<Song> songsListView) {
-    this.songsOnPlaylistListView = songsListView;
-    songsOnPlaylistListView.setOnMouseClicked(event -> { // Add on double click event on song listview from selected playlist
-      if (event.getClickCount()==2 && songsOnPlaylistListView.getSelectionModel().getSelectedItem() != null){
-        if(mediaPlayerModel.getCurrentPlaylist() != playlistListView.getSelectionModel().getSelectedItem()){ // If song is selected from different playlist switch playlists
-          mediaPlayerModel.setCurrentPlaylist(playlistListView.getSelectionModel().getSelectedItem());
-        }
-        mediaPlayerModel.setCurrentSongIndex(songsOnPlaylistListView.getSelectionModel().getSelectedIndex()); // Sets current song index plays audio
-        mediaPlayerModel.playCurrentSong();
-        playPauseImageView.setImage(pauseImage);
-      }
-    });
-  }
 
-  public void setLibrary(Map<Playlist, ObservableList<Song>> library){
-    mediaPlayerModel.setLibrary(library);
-  }
-
-  public void setPlaylistListView(ListView<Playlist> playlistListView){
-    this.playlistListView = playlistListView;
-  }
 }

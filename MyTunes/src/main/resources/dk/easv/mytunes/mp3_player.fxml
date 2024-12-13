@@ -4,7 +4,6 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.image.Image?>
@@ -13,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="BOTTOM_LEFT" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.pl.controllers.MediaPlayerController">
+<VBox alignment="BOTTOM_LEFT" prefWidth="1100.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.pl.controllers.MediaPlayerController">
    <children>
       <Label fx:id="playlistLbl" text="Playlist:" textFill="WHITE">
          <font>
@@ -31,7 +30,7 @@
             <Insets left="50.0" />
          </VBox.margin>
       </Label>
-      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" styleClass="transparent2" stylesheets="@style.css">
+      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="transparent2" stylesheets="@style.css" VBox.vgrow="ALWAYS">
          <children>
             <VBox alignment="CENTER_LEFT" prefWidth="250.0" HBox.hgrow="ALWAYS">
                <children>
@@ -47,7 +46,7 @@
                   </Label>
                </children>
             </VBox>
-            <VBox alignment="CENTER" spacing="10.0" HBox.hgrow="ALWAYS">
+            <VBox alignment="CENTER" prefHeight="85.0" prefWidth="584.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
                   <HBox alignment="CENTER" spacing="15.0">
                      <children>
@@ -95,7 +94,17 @@
                            </cursor></Button>
                      </children>
                   </HBox>
-                  <ProgressBar prefHeight="7.0" prefWidth="400.0" progress="1.0" VBox.vgrow="ALWAYS" />
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label fx:id="currentTimeLabel" text="00:00" textFill="#c9c9c9" />
+                        <Slider fx:id="timeSlider" blockIncrement="1.0" prefHeight="16.0" prefWidth="428.0" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets left="20.0" right="20.0" />
+                           </HBox.margin>
+                        </Slider>
+                        <Label fx:id="totalTimeLabel" layoutX="10.0" layoutY="10.0" text="00:00" textFill="#c9c9c9" />
+                     </children>
+                  </HBox>
                </children>
                <HBox.margin>
                   <Insets />

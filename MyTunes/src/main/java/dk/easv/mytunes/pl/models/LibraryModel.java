@@ -1,20 +1,18 @@
 package dk.easv.mytunes.pl.models;
 
-import com.drew.lang.annotations.NotNull;
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.bll.PlaylistService;
 import dk.easv.mytunes.bll.SongService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+
 
 public class LibraryModel
 {
@@ -37,7 +35,6 @@ public class LibraryModel
   private final SongService songService;
 
 
-//  private final SongModel songModel;
   private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
   private final ObservableList<Song> allSongsObservableList = FXCollections.observableArrayList();
   private final Map<Playlist, ObservableList<Song>> library;
@@ -58,9 +55,10 @@ public class LibraryModel
     // Try fetch all songs from database
     List<Song> allSongs = songService.getAllSongs();
     if(allSongs == null){
-        allSongsObservableList.setAll(FXCollections.observableArrayList());
+      allSongsObservableList.setAll(FXCollections.observableArrayList());
+    }else{
+      allSongsObservableList.setAll(allSongs);
     }
-    allSongsObservableList.setAll(allSongs);
 
     // Try fetch main playlist, if not found create one and save in database and put to library
     mainPlaylist = playlistService.getMainPlaylist();

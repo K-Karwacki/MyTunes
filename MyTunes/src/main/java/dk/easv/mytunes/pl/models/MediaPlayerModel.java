@@ -2,13 +2,14 @@ package dk.easv.mytunes.pl.models;
 
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -22,14 +23,17 @@ public class MediaPlayerModel {
   private boolean isPaused = false;
   private boolean isMuted = false;
   private double volume;
+  private ReadOnlyObjectWrapper<Duration> currentDuration;
+  private ReadOnlyObjectWrapper<Duration> totalDuration;
 
   // Initialize media player model
   public MediaPlayerModel() {
-//    this.mediaPlayer = new MediaPlayer(new Media(""));
     this.currentPlaylist = null;
     this.currentSong = null;
     this.currentIndex = 0;
     this.library = null;
+    this.currentDuration = new ReadOnlyObjectWrapper<>(Duration.ZERO);
+    this.totalDuration = new ReadOnlyObjectWrapper<>(Duration.UNKNOWN);
   }
 
   public void setLibrary(Map<Playlist, ObservableList<Song>> library) {
@@ -51,12 +55,22 @@ public class MediaPlayerModel {
       mediaPlayer.setMute(true);
     }
 
-    mediaPlayer.setVolume(volume);
+    mediaPlayer.setOnReady(()->{
+      mediaPlayer.setVolume(volume);
+      currentDuration.set(mediaPlayer.getCurrentTime());
+      totalDuration.set(mediaPlayer.getTotalDuration());
+      System.out.println(mediaPlayer.getTotalDuration().toSeconds());
+      isPaused = false;
+      notifySongChange();
+    });
+
+    // Track current playback time
+    mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+      currentDuration.set(newTime != null ? newTime : Duration.ZERO);
+    });
+
     mediaPlayer.setOnEndOfMedia(this::playNext); // Play the next song when the current one ends
     mediaPlayer.play();
-
-    isPaused = false;
-    notifySongChange();
   }
 
   public void playNext() {
@@ -193,4 +207,25 @@ public class MediaPlayerModel {
     }
     this.volume = volume;
   }
+
+  public ReadOnlyObjectProperty<Duration> getCurrentDurationProperty(){
+    return currentDuration.getReadOnlyProperty();
+  }
+
+  public ReadOnlyObjectProperty<Duration> getTotalDurationProperty(){
+    return totalDuration.getReadOnlyProperty();
+  }
+
+  public Duration getCurrentDuration(){
+    return currentDuration.get();
+  }
+
+  public Duration getTotalDuration(){
+    return totalDuration.get();
+  }
+
+  public void seek(Duration duration){
+    mediaPlayer.seek(duration);
+  }
+
 }

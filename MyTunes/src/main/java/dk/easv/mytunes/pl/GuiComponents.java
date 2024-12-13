@@ -137,9 +137,17 @@ public abstract class GuiComponents
       File file = fileChooser.showOpenDialog(new Stage());
       if (file != null) {
         System.out.println(file.getName());
+        String artist;
+        String songTitle;
+
         String[] parts = file.getName().split(" - ");
-        String artist = parts[0];  // Artist Name
-        String songTitle = parts[1].replace(".mp3", "");    // Song Title
+        if(parts.length > 1){
+          artist = parts[0];  // Artist Name
+          songTitle = parts[1].replace(".mp3", "");    // Song Title
+        }else{
+          artist = "";
+          songTitle = parts[0].replace(".mp3", "");
+        }
 
         artistField.setText(artist);
         titleField.setText(songTitle);

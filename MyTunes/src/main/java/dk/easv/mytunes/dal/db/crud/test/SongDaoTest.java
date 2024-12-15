@@ -9,12 +9,7 @@ import java.util.List;
 
 public class SongDaoTest implements SongDao
 {
-
-  @Override public void createSong(Song song) throws SQLException
-  {
-    System.out.println("called dao create song");
-
-  }
+  
 
   @Override public void deleteSong(Song song) throws SQLException
   {
@@ -49,12 +44,6 @@ public class SongDaoTest implements SongDao
     return null;
   }
 
-  @Override public void updateArtistById(int id, String newArtistName)
-      throws SQLException
-  {
-    System.out.println("called dao update artist by id");
-
-  }
 
   @Override public Song createReturnSong(Song song) throws SQLException
   {

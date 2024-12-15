@@ -29,22 +29,11 @@ public class SongDaoDB extends CrudDao<Song> implements SongDao
     return this.select("Select * from song", new Object[]{}, songRowMapper);
   }
 
-  @Override public void updateArtistById(int id, String newArtistName) throws SQLException {
-    this.update("Update song set artist = ? where id = ?", new Object[]{newArtistName, id});
-  }
-
   @Override public Song createReturnSong(Song song) throws SQLException
   {
     String encodedPath = URLEncoder.encode(song.getFilePath(),
         StandardCharsets.UTF_8);
       return this.insertReturn("insert into song (title, artist, category, duration,path) values (?, ?, ?, ?, ?);", "select * from song where id = ?",new Object[]{song.getTitle(), song.getArtist(), song.getCategory(), song.getDuration(), encodedPath}, songRowMapper);
-  }
-
-  @Override public void createSong(Song song) throws SQLException
-  {
-    String encodedPath = URLEncoder.encode(song.getFilePath(),
-        StandardCharsets.UTF_8);
-    this.insert("insert into song (title, artist, category, duration,path) values (?, ?, ?, ?, ?);", new Object[]{song.getTitle(), song.getArtist(), song.getCategory(), song.getDuration(), encodedPath});
   }
 
 

@@ -56,7 +56,26 @@ public class Playlist {
     }
     songs.add(song);
   }
-  public void removeSong(Song song) { if(songs.size()>0){songs.remove(song);};}
+  public void removeSong(Song song) {
+    if(songs.size()>0){
+      try{
+        if(song.getId() != 0){
+          songs.removeIf(songOnPl -> songOnPl.getId() == song.getId());
+        }else{
+          songs.remove(song);
+        }
+      }catch (Exception e){
+        System.out.println("something went wrong");
+      }
+
+      //        for(Song songOnPlaylist:songs){
+//          if(songOnPlaylist.getId() == song.getId()){
+//            songs.remove(song);
+//          }
+//        }
+//      }
+    }
+  }
   public String toString() {
     return name + " (" + songs.size() + "songs)";
   }

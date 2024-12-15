@@ -22,9 +22,8 @@ public class MediaPlayerModel {
   private Consumer<Song> onSongChange; // Callback for updating UI when a song changes
   private boolean isPaused = false;
   private boolean isMuted = false;
-  private double volume;
-  private ReadOnlyObjectWrapper<Duration> currentDuration;
-  private ReadOnlyObjectWrapper<Duration> totalDuration;
+  private final ReadOnlyObjectWrapper<Duration> currentDuration;
+  private final ReadOnlyObjectWrapper<Duration> totalDuration;
 
   // Initialize media player model
   public MediaPlayerModel() {
@@ -51,15 +50,14 @@ public class MediaPlayerModel {
     Media media = new Media(new File(songPath).toURI().toString());
     mediaPlayer = new MediaPlayer(media);
 
-    if(isMuted){
-      mediaPlayer.setMute(true);
-    }
+
 
     mediaPlayer.setOnReady(()->{
-      mediaPlayer.setVolume(volume);
+      if(isMuted){
+        mediaPlayer.setMute(true);
+      }
       currentDuration.set(mediaPlayer.getCurrentTime());
       totalDuration.set(mediaPlayer.getTotalDuration());
-      System.out.println(mediaPlayer.getTotalDuration().toSeconds());
       isPaused = false;
       notifySongChange();
     });
@@ -121,7 +119,6 @@ public class MediaPlayerModel {
       onSongChange.accept(library.get(currentPlaylist).get(currentIndex));
     }
   }
-
 
   public void setCurrentSongIndex(int index) {
     currentIndex = index;
@@ -203,9 +200,7 @@ public class MediaPlayerModel {
   public void setVolume(double volume){
     if(mediaPlayer != null){
       mediaPlayer.setVolume(volume);
-//      System.out.println(mediaPlayer.volumeProperty().set);
     }
-    this.volume = volume;
   }
 
   public ReadOnlyObjectProperty<Duration> getCurrentDurationProperty(){

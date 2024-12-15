@@ -1,5 +1,8 @@
 package dk.easv.mytunes.be;
 
+import javax.crypto.KeyGenerator;
+import java.util.Random;
+
 public class Song {
   private int id; // Unique identifier for the song
   private String title;
@@ -9,9 +12,7 @@ public class Song {
   private String duration; // e.g., "4:23"
 
   // Constructor
-
-  public Song()
-  {
+  public Song(){
 
   }
 

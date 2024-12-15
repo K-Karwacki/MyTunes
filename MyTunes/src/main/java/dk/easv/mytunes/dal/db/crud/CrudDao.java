@@ -4,10 +4,7 @@ import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.dal.DBConnection;
 import dk.easv.mytunes.dal.utils.RowMapper;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +39,69 @@ public class CrudDao<T>
 
   //Generic method for INSERT
   protected void insert(String query, Object[] params) throws SQLException {
-    try (PreparedStatement stmt = getConnection().prepareStatement(query)) {
+    Connection connection = getConnection();
+    T result = null;
+    connection.setAutoCommit(false);
+    try(PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)){
       for (int i = 0; i < params.length; i++) {
         stmt.setObject(i + 1, params[i]);
       }
-      stmt.executeUpdate();
+      int affectedRows = stmt.executeUpdate();
+      if(affectedRows == 0){
+        throw new SQLException("No rows affected");
+      }
+      int generatedId = -1;
+
+      try(ResultSet generatedKeys = stmt.getGeneratedKeys()){
+        if(generatedKeys.next()){
+          generatedId = generatedKeys.getInt(1);
+        }else {
+          throw new SQLException("Added but id not returned");
+        }
+      }
+      connection.commit();
+    }catch (SQLException e){
+      connection.rollback();
+      throw e;
     }
+  }
+
+  protected <T> T insertReturn(String insertQuery, String returnQuery, Object[] params, RowMapper<T> rowMapper) throws SQLException{
+    Connection connection = getConnection();
+    T result = null;
+    connection.setAutoCommit(false);
+    try(PreparedStatement stmt = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)){
+      for (int i = 0; i < params.length; i++) {
+        stmt.setObject(i + 1, params[i]);
+      }
+      int affectedRows = stmt.executeUpdate();
+      if(affectedRows == 0){
+        throw new SQLException("No rows affected");
+      }
+      int generatedId = -1;
+
+      try(ResultSet generatedKeys = stmt.getGeneratedKeys()){
+        if(generatedKeys.next()){
+          generatedId = generatedKeys.getInt(1);
+        }else {
+          throw new SQLException("Added but id not returned");
+        }
+      }
+
+      try(PreparedStatement returnStmt = connection.prepareStatement(returnQuery)){
+        returnStmt.setInt(1, generatedId);
+        try(ResultSet returnSet = returnStmt.executeQuery()){
+          if(returnSet.next()){
+            result = rowMapper.mapRow(returnSet);
+          }
+        }
+      }
+      connection.commit();
+    }catch (SQLException e){
+      connection.rollback();
+      throw e;
+    }
+    return result;
   }
 
   // Generic method for UPDATE
@@ -70,7 +124,3 @@ public class CrudDao<T>
     }
   }
 }
-/*
-* EXTEND TO DATA INTEGRITY VALIDATION OR SOMETHING
-*
-* */

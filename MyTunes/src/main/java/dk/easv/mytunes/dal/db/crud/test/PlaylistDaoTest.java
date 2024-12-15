@@ -12,16 +12,6 @@ import java.util.List;
 
 public class PlaylistDaoTest implements PlaylistDao
 {
-  @Override public Playlist getPlaylistById(int id) throws SQLException
-  {
-    return null;
-  }
-
-  @Override public void createPlaylist(Playlist playlist) throws SQLException
-  {
-    System.out.println("called dao to create playlist");
-  }
-
   @Override public void deletePlaylist(Playlist playlist) throws SQLException
   {
     System.out.println("called dao");
@@ -55,10 +45,10 @@ public class PlaylistDaoTest implements PlaylistDao
 
   }
 
-  @Override public Playlist getMainPlaylist() throws SQLException
-  {
-    System.out.println("called dao get main playlist");
 
+  @Override public Playlist insertReturnPlaylist(Playlist playlist)
+      throws SQLException
+  {
     return null;
   }
 }

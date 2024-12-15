@@ -22,6 +22,7 @@ public class LibraryController implements Initializable
   @FXML private ListView<Playlist> playlistListView;
   @FXML private ListView<Song> songsOnPlaylistListView;
   @FXML private ComboBox<String> filterSongsComboBox;
+  @FXML private TextField searchTextField;
 
   private Playlist playlistTemp;
   private FilteredList<Song> filteredSongListTemp;
@@ -36,12 +37,7 @@ public class LibraryController implements Initializable
     filterSongsComboBox.getItems().setAll(LibraryModel.SONG_CATEGORIES);  // Populate filter ComboBox with categories
     // Set filtering on the filtered list when category change
     filterSongsComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-      filteredSongListTemp.setPredicate(song -> {
-        if ("All".equals(newValue)) {
-          return true;
-        }
-        return song.getCategory().equals(newValue);
-      });
+      updateFilter(filteredSongListTemp, newValue, searchTextField.getText());
     });
 
     playlistListView.setItems(libraryModel.getPlaylists()); // Populate playlistListView
@@ -54,11 +50,39 @@ public class LibraryController implements Initializable
       }
     });
 
+    searchTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
+      updateFilter(filteredSongListTemp, filterSongsComboBox.getValue(), newValue);
+    }));
+
     songsOnPlaylistListView.setItems(null);
   }
 
+  private void updateFilter(FilteredList<Song> filteredSongs, String category, String searchText) {
+    filteredSongs.setPredicate(song -> {
+      if (searchText == null || searchText.isEmpty())
+      {
+        // If search text is empty, only filter by category
+        if (category.equals("All"))
+        {
+          return true;
+        }
+        else
+        {
+          return song.getCategory().equals(category);
+        }
+      }
+
+      String lowerCaseFilter = searchText.toLowerCase();
+      boolean matchesCategory = category.equals("All") || song.getCategory().equals(category);
+      boolean matchesText =
+          song.getArtist().toLowerCase().contains(lowerCaseFilter) || song.getTitle().toLowerCase().contains(lowerCaseFilter);
+
+      return matchesCategory && matchesText;
+    });
+  }
+
   @FXML private void onClickOpenCreatePlaylist(ActionEvent actionEvent) {
-    GuiComponents.showCreateEditPlaylistDialog(null, (playlistName -> libraryModel.createPlaylist(new Playlist(playlistName))));
+    GuiComponents.showCreateEditPlaylistDialog(null, (playlistName -> libraryModel.createNewPlaylistAndAddToLibrary(new Playlist(playlistName))));
   }
 
   @FXML private void onClickOpenEditSelectedPlaylist(ActionEvent actionEvent) {
@@ -72,6 +96,39 @@ public class LibraryController implements Initializable
       libraryModel.updatePlaylistName(selectedPlaylist, newPlaylistName);
       playlistListView.refresh();
     });
+  }
+
+  @FXML private void onClickOpenImportSong(ActionEvent actionEvent) {
+    GuiComponents.showImportEditSongDialog(null, song-> {
+      libraryModel.importNewSong(new Song(song.get("title"), song.get("artist"), song.get("category"), song.get("path"), song.get("duration")));
+      playlistListView.refresh();
+    });
+  }
+
+  @FXML private void onClickAddSelectedSongToSelectedPlaylist(ActionEvent actionEvent) {
+    Song selectedSong = songsOnPlaylistListView.getSelectionModel().getSelectedItem();
+    Playlist selectedPlaylist = playlistListView.getSelectionModel().getSelectedItem();
+    AtomicBoolean isOnThePlaylist = new AtomicBoolean(false);
+    if(selectedSong == null || selectedPlaylist == null){
+      GuiComponents.showAlert(Alert.AlertType.ERROR, "Select playlist and song.");
+      return;
+    }
+    if(selectedPlaylist.getSongs().contains(selectedSong)){
+      GuiComponents.showAlert(Alert.AlertType.ERROR, "Song is already on the playlist");
+      return;
+    }
+
+    selectedPlaylist.getSongs().forEach(song -> {
+      if(song.getId() != 0 && song.getId() == selectedSong.getId()){
+        GuiComponents.showAlert(Alert.AlertType.ERROR, "Song is already on the playlist");
+        isOnThePlaylist.set(true);
+      }
+    });
+    if(isOnThePlaylist.get()){
+      return;
+    }
+    libraryModel.addSongToPlaylistLibrary(selectedSong, selectedPlaylist);
+    playlistListView.refresh();
   }
 
   @FXML private void onClickRemoveSelectedSongFromSelectedPlaylist(ActionEvent actionEvent) {
@@ -112,42 +169,6 @@ public class LibraryController implements Initializable
     songsOnPlaylistListView.setItems(null);
   }
 
-  @FXML private void onClickAddSelectedSongToSelectedPlaylist(ActionEvent actionEvent) {
-    Song selectedSong = songsOnPlaylistListView.getSelectionModel().getSelectedItem();
-    System.out.println(selectedSong);
-    Playlist selectedPlaylist = playlistListView.getSelectionModel().getSelectedItem();
-    System.out.println(selectedPlaylist);
-    AtomicBoolean isOnThePlaylist = new AtomicBoolean(false);
-    if(selectedSong == null || selectedPlaylist == null){
-      GuiComponents.showAlert(Alert.AlertType.ERROR, "Select playlist and song.");
-      return;
-    }
-    if(selectedPlaylist.getSongs().contains(selectedSong)){
-      GuiComponents.showAlert(Alert.AlertType.ERROR, "Song is already on the playlist");
-      return;
-    }
-
-    selectedPlaylist.getSongs().forEach(song -> {
-      if(song.getId() == selectedSong.getId()){
-        GuiComponents.showAlert(Alert.AlertType.ERROR, "Song is already on the playlist");
-        isOnThePlaylist.set(true);
-      }
-    });
-
-    if(isOnThePlaylist.get()){
-      return;
-    }
-    libraryModel.addSongToPlaylistLibrary(selectedSong, selectedPlaylist);
-    playlistListView.refresh();
-  }
-
-  @FXML private void onClickOpenImportSong(ActionEvent actionEvent) {
-    GuiComponents.showImportEditSongDialog(null, song-> {
-      libraryModel.importNewSong(new Song(song.get("title"), song.get("artist"), song.get("category"), song.get("path"), song.get("duration")));
-      playlistListView.refresh();
-    });
-  }
-
   @FXML private void onClickOpenEditSelectedSong(){
     Song selectedSong = songsOnPlaylistListView.getSelectionModel().getSelectedItem();
     GuiComponents.showImportEditSongDialog(selectedSong, songData->{
@@ -157,13 +178,11 @@ public class LibraryController implements Initializable
   }
 
 
-
   // Return dependencies needed for media player
   public ListView<Song> getSongOnPlaylistListView() {
     return songsOnPlaylistListView;
   }
-  public ListView<Playlist> getPlaylistListView()
-  {
+  public ListView<Playlist> getPlaylistListView() {
     return playlistListView;
   }
   public Map<Playlist, ObservableList<Song>> getLibrary() {

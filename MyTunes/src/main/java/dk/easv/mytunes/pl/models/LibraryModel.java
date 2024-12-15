@@ -6,10 +6,8 @@ import dk.easv.mytunes.bll.PlaylistService;
 import dk.easv.mytunes.bll.SongService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -34,9 +32,9 @@ public class LibraryModel
   private final PlaylistService playlistService;
   private final SongService songService;
 
-
+  private final Map<Integer, Song> songsCache;
   private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
-  private final ObservableList<Song> allSongsObservableList = FXCollections.observableArrayList();
+  private final ObservableList<Song> allSongs = FXCollections.observableArrayList();
   private final Map<Playlist, ObservableList<Song>> library;
   private Playlist mainPlaylist;
 
@@ -44,43 +42,31 @@ public class LibraryModel
   public LibraryModel(){
     playlistService = new PlaylistService();
     songService = new SongService();
-//    songModel = new SongModel();
-    library = new HashMap<>();
+    library = new WeakHashMap<>();
+    songsCache = new HashMap<>();
 
 
     populateFromDatabase();
   }
 
   private void populateFromDatabase(){
-    // Try fetch all songs from database
-    List<Song> allSongs = songService.getAllSongs();
-    if(allSongs == null){
-      allSongsObservableList.setAll(FXCollections.observableArrayList());
-    }else{
-      allSongsObservableList.setAll(allSongs);
-    }
+    List<Song> fetchedSongs = songService.getAllSongs();
+    List<Playlist> fetchedPlaylists = playlistService.getAllPlaylists();
 
-    // Try fetch main playlist, if not found create one and save in database and put to library
-    mainPlaylist = playlistService.getMainPlaylist();
-    if(mainPlaylist == null){
-      playlistService.insertNewPlaylist(new Playlist("Library", true));
-      if(playlistService.getMainPlaylist() == null){
-        mainPlaylist = new Playlist("Library", true);
-      }else{
-        mainPlaylist = playlistService.getMainPlaylist();
+    if(fetchedSongs != null && fetchedPlaylists != null) {
+      allSongs.setAll(fetchedSongs);
+      mainPlaylist = fetchedPlaylists.stream().filter(Playlist::isMain).collect(Collectors.toList()).getFirst();
+
+      if (mainPlaylist == null) {
+        mainPlaylist = playlistService.createNewPlaylist(new Playlist("Library", true));
       }
-    }
-    playlists.add(mainPlaylist);
-    mainPlaylist.setSongs(allSongsObservableList);
-    library.put(mainPlaylist, allSongsObservableList);
+      mainPlaylist.setSongs(allSongs);
+      library.put(mainPlaylist, allSongs);
+      playlists.add(mainPlaylist);
 
-    // Try fetch all playlists from database, and filter all that are not main playlist, populate them with songs and put to library
-    List<Playlist> allPlaylists = playlistService.getAllPlaylists();
+      List<Playlist> playlistsNotMain = fetchedPlaylists.stream().filter(Playlist::isNotMain).toList();
 
-    if(allPlaylists != null){
-      for (Playlist playlist : allPlaylists.stream().filter(Playlist::isNotMain).collect(
-          Collectors.toList()))
-      {
+      for (Playlist playlist:playlistsNotMain){
         List<Song> songsOnPlaylist = songService.getSongsForPlaylist(playlist);
         if(songsOnPlaylist != null){
           playlist.setSongs(songsOnPlaylist);
@@ -88,6 +74,12 @@ public class LibraryModel
         }
         playlists.add(playlist);
       }
+    }
+    else{
+      mainPlaylist = new Playlist("Library", true);
+      mainPlaylist.setSongs(allSongs);
+      playlists.add(mainPlaylist);
+      library.put(mainPlaylist, allSongs);
     }
   }
 
@@ -102,16 +94,15 @@ public class LibraryModel
     library.remove(playlistToRemove);
   }
 
-  public void createPlaylist(Playlist newPlaylist){
-    playlistService.insertNewPlaylist(newPlaylist);
-    List<Playlist> list = playlistService.getAllPlaylists();
-    if(list != null){
-      playlists.add(list.getLast());
-      library.put(list.getLast(), FXCollections.observableArrayList());
+  public void createNewPlaylistAndAddToLibrary(Playlist playlist){
+    Playlist returnedPlaylist = playlistService.createNewPlaylist(playlist);
+    if(returnedPlaylist!= null){
+      playlists.add(returnedPlaylist);
+      library.put(returnedPlaylist, FXCollections.observableArrayList());
       return;
     }
-    playlists.add(newPlaylist);
-    library.put(newPlaylist, FXCollections.observableArrayList());
+    playlists.add(playlist);
+    library.put(playlist, FXCollections.observableArrayList());
   }
 
   public void updatePlaylistName(Playlist selectedPlaylist, String newPlaylistName) {
@@ -121,6 +112,11 @@ public class LibraryModel
   public void addSongToPlaylistLibrary(Song song, Playlist playlist) {
     playlist.addSong(song);
     if(!library.get(playlist).contains(song)){
+      for(Song songOnPl: library.get(playlist)){
+        if(song.getId() != 0 && song.getId() == songOnPl.getId()){
+          return;
+        }
+      }
       library.get(playlist).add(song);
       playlistService.addSongToPlaylist(song, playlist);
     }
@@ -139,7 +135,11 @@ public class LibraryModel
 
   public void removeSongFromPlaylist(Song song, Playlist playlist){
     playlist.removeSong(song);
-    library.get(playlist).remove(song);
+    if(song.getId() == 0 && library.get(playlist).contains(song)){
+      library.get(playlist).remove(song);
+    }else{
+      library.get(playlist).removeIf(songOnPl -> songOnPl.getId() == song.getId());
+    }
     playlistService.deleteSongFromPlaylist(song, playlist);
   }
 
@@ -148,13 +148,12 @@ public class LibraryModel
   }
 
   public void importNewSong(Song song) {
-    songService.addSong(song);
-    List<Song> refreshesSongs = songService.getAllSongs();
-    if(refreshesSongs != null){
-      allSongsObservableList.setAll(refreshesSongs);
+    Song newSong = songService.createReturnSong(song);
+    if(newSong != null){
+      allSongs.add(newSong);
       return;
     }
-    allSongsObservableList.add(song);
+    allSongs.add(song);
   }
 
   public void updateSong(Song selectedSong, Map<String, String> updatedSongMap) {
@@ -164,17 +163,19 @@ public class LibraryModel
     selectedSong.setFilePath(updatedSongMap.get("path"));
     selectedSong.setCategory(updatedSongMap.get("category"));
     songService.updateSong(new Song(selectedSong.getId(), updatedSongMap.get("title"), updatedSongMap.get("artist"), updatedSongMap.get("category"), updatedSongMap.get("path"), updatedSongMap.get("duration")));
-    allSongsObservableList.setAll(songService.getAllSongs());
-    mainPlaylist.setSongs(allSongsObservableList);
-    for (Playlist playlist:playlists){
-      if(playlist.isNotMain()){
-        List<Song> songsOnPlaylist = songService.getSongsForPlaylist(playlist);
-        if(songsOnPlaylist != null){
-          playlist.setSongs(songsOnPlaylist);
-          library.get(playlist).setAll(songsOnPlaylist);
+
+    List<Song> refreshedSongsList = songService.getAllSongs();
+    if(refreshedSongsList != null){
+      allSongs.setAll(refreshedSongsList);
+      for (Playlist playlist:playlists){
+        if(playlist.isNotMain()){
+          List<Song> refreshedSongsOnPlaylist = songService.getSongsForPlaylist(playlist);
+          if(refreshedSongsOnPlaylist != null){
+            playlist.setSongs(refreshedSongsOnPlaylist);
+            library.get(playlist).setAll(refreshedSongsList);
+          }
         }
       }
     }
   }
-
 }

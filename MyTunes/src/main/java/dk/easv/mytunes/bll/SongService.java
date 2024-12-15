@@ -5,6 +5,8 @@ import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.dal.db.crud.entities.SongDao;
 import dk.easv.mytunes.dal.db.crud.entities.SongDaoDB;
 import dk.easv.mytunes.dal.db.crud.test.SongDaoTest;
+import dk.easv.mytunes.pl.GuiComponents;
+import javafx.scene.control.Alert;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,15 +20,16 @@ public class SongService
     songDao = new SongDaoTest();
   }
 
-  public void addSong(Song song){
+  public Song createReturnSong(Song song){
     if(song != null){
       try{
-        songDao.createSong(song);
+        return songDao.createReturnSong(song);
       }catch (SQLException e){
         System.out.println("SongDAO addSong failed: " + e.getMessage());
-        //      e.printStackTrace();
+              e.printStackTrace();
       }
     }
+    return null;
   }
 
   public void deleteSong(Song song){
@@ -39,6 +42,7 @@ public class SongService
       }
     }
   }
+
   public List<Song> getAllSongs(){
     try{
       return songDao.getAllSongs();
@@ -48,7 +52,6 @@ public class SongService
     }
     return null;
   }
-
 
   public List<Song> getSongsForPlaylist(Playlist playlist){
     if(playlist != null){
@@ -62,18 +65,7 @@ public class SongService
     return null;
   }
 
-  void updateSongArtistById(int id, String newArtistName){
-    if(!newArtistName.isEmpty()){
-      try{
-        songDao.updateArtistById(id, newArtistName);
-      }catch (SQLException e){
-        e.printStackTrace();
-      }
-    }
-  }
-
-  public void updateSong(Song selectedSong)
-  {
+  public void updateSong(Song selectedSong) {
     if(selectedSong != null){
       try{
         songDao.updateSong(selectedSong);

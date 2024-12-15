@@ -23,19 +23,18 @@ public class MediaPlayerController implements Initializable
 {
   private final MediaPlayerModel mediaPlayerModel;
 
-  @FXML Label currentSongLabel;
-  @FXML Label currentArtistLabel;
-  @FXML Label nextSongLbl;
-  @FXML Label playlistLbl;
-  @FXML Button playPauseBtn;
-  @FXML ImageView playPauseImageView;
-  @FXML ImageView muteUnMuteImageView;
-  @FXML Slider volumeSlider;
-  @FXML Slider timeSlider;
-  @FXML Label totalTimeLabel;
-  @FXML Label currentTimeLabel;
-  @FXML ListView<Playlist> playlistListView;
-  @FXML ListView<Song> songsOnPlaylistListView;
+  @FXML private Label currentSongLabel;
+  @FXML private Label currentArtistLabel;
+  @FXML private Label nextSongLabel;
+  @FXML private Label currentPlaylistLabel;
+  @FXML private ImageView playPauseImageView;
+  @FXML private ImageView muteUnMuteImageView;
+  @FXML private Slider volumeSlider;
+  @FXML private Slider timeSlider;
+  @FXML private Label totalTimeLabel;
+  @FXML private Label currentTimeLabel;
+  @FXML private ListView<Playlist> playlistListView;
+  @FXML private ListView<Song> songsOnPlaylistListView;
 
   private final Image playImage = new Image(
       String.valueOf(MyTunes.class.getResource("images/play.png")));
@@ -61,8 +60,9 @@ public class MediaPlayerController implements Initializable
       timeSlider.setMax(mediaPlayerModel.getTotalDuration().toSeconds());
       currentSongLabel.setText(song.getTitle());
       currentArtistLabel.setText(song.getArtist());
-      playlistLbl.setText("Playlist: " + mediaPlayerModel.getCurrentPlaylist().getName());
-      nextSongLbl.setText("Next: "+ mediaPlayerModel.getNextSong().getTitle() + " - " + mediaPlayerModel.getNextSong().getArtist());
+      currentPlaylistLabel
+          .setText("Playlist: " + mediaPlayerModel.getCurrentPlaylist().getName());
+      nextSongLabel.setText("Next: "+ mediaPlayerModel.getNextSong().getTitle() + " - " + mediaPlayerModel.getNextSong().getArtist());
       totalTimeLabel.setText(String.format("%02d:%02d", (int)mediaPlayerModel.getTotalDuration().toMinutes(), (int)mediaPlayerModel.getTotalDuration().toSeconds()%60));
 
       mediaPlayerModel.getCurrentDurationProperty().addListener((observable, oldValue, newValue) -> {
@@ -79,7 +79,6 @@ public class MediaPlayerController implements Initializable
   {
     timeSlider.setDisable(true);
 
-    mediaPlayerModel.setVolume(volumeSlider.getValue());
     volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
       mediaPlayerModel.setVolume(Math.pow(newValue.doubleValue(), 2));
     });

@@ -19,4 +19,5 @@ public class SongRowMapper implements RowMapper<Song>
     song.setDuration(resultSet.getString("duration"));
     return song;
   }
+
 }

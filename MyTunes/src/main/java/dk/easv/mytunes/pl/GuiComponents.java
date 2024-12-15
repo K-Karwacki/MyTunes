@@ -252,8 +252,7 @@ public abstract class GuiComponents
     stage.show();
   }
 
-  public static void showDeleteSongFromMainConfirmationDialog(Song song, Consumer<Boolean> confirm)
-  {
+  public static void showDeleteSongFromMainConfirmationDialog(Song song, Consumer<Boolean> confirm) {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("confirmation");
     alert.setHeaderText(null);
@@ -274,8 +273,8 @@ public abstract class GuiComponents
       }
     });
   }
-  public static void showDeleteSongFromPlaylistConfirmationDialog(Song song, Playlist playlist, Consumer<Boolean> confirm)
-  {
+
+  public static void showDeleteSongFromPlaylistConfirmationDialog(Song song, Playlist playlist, Consumer<Boolean> confirm) {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("confirmation");
     alert.setHeaderText(null);

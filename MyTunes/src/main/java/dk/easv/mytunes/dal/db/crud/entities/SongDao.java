@@ -6,10 +6,9 @@ import java.util.List;
 
 public interface SongDao
 {
-  void createSong(Song song) throws SQLException;
   void deleteSong(Song song) throws SQLException;
   void updateSong(Song song) throws SQLException;
   List<Song> getSongsByPlaylistId(int playlistId) throws SQLException;
   List<Song> getAllSongs() throws SQLException;
-  void updateArtistById(int id, String newArtistName) throws SQLException;
+  Song createReturnSong(Song song) throws SQLException;
 }

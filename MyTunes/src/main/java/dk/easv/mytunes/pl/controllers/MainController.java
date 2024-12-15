@@ -54,9 +54,4 @@ public class MainController implements Initializable
     }
     return loader.getController();
   }
-
-
-
-
-
 }

@@ -55,4 +55,9 @@ public class SongDaoTest implements SongDao
     System.out.println("called dao update artist by id");
 
   }
+
+  @Override public Song createReturnSong(Song song) throws SQLException
+  {
+    return null;
+  }
 }

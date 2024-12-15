@@ -29,15 +29,16 @@ public class PlaylistService
     }
   }
 
-  public void insertNewPlaylist(Playlist newPlaylist) {
+  public Playlist createNewPlaylist(Playlist newPlaylist) {
     if(newPlaylist != null){
       try{
-        playlistDao.createPlaylist(newPlaylist);
+        return playlistDao.insertReturnPlaylist(newPlaylist);
       }catch (SQLException e){
         System.out.println("PlaylistDao failed. " + e.getMessage());
-                e.printStackTrace();
+        e.printStackTrace();
       }
     }
+    return null;
   }
 
   public List<Playlist> getAllPlaylists() {
@@ -61,16 +62,13 @@ public class PlaylistService
     }
   }
 
-
-
   public void addSongToPlaylist(Song selectedSong, Playlist selectedPlaylist) {
-//    System.out.println(selectedPlaylist +" : "+ selectedSong);
     if(selectedSong != null && selectedPlaylist != null){
       try{
         playlistDao.addSongToPlaylist(selectedSong, selectedPlaylist);
       }catch (SQLException e){
         System.out.println("PlaylistDao failed. " + e.getMessage());
-//        e.printStackTrace();
+        e.printStackTrace();
       }
     }
   }
@@ -85,13 +83,4 @@ public class PlaylistService
     }
   }
 
-  public Playlist getMainPlaylist()
-  {
-    try{
-      return playlistDao.getMainPlaylist();
-    }catch (SQLException e){
-      e.printStackTrace();
-      return null;
-    }
-  }
 }
